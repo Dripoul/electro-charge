@@ -18,7 +18,7 @@
         <h1 class="text-xl font-bold text-blue-400 flex items-center justify-center gap-2">
             ⚡ ElectroCharge
         </h1>
-        <p class="text-xs text-slate-400">Optimisez vos recharges de véhicule électrique</p>
+        <p class="text-xs text-slate-400">Calculateur de temps de recharge</p>
     </header>
 
     <!-- Contenu Principal -->
@@ -27,26 +27,44 @@
         <!-- ONGLET 1 : CALCULATEUR -->
         <section id="tab-calculator" class="space-y-4">
             
+            <!-- BLOC RÉSULTATS (TOUT EN HAUT) -->
+            <div class="bg-gradient-to-br from-blue-900/80 to-slate-800 p-5 rounded-2xl border border-blue-500/40 shadow-xl space-y-3">
+                <p class="text-xs font-semibold text-blue-300 uppercase tracking-wider text-center">Estimation du temps de recharge</p>
+                
+                <div class="text-center py-2">
+                    <span id="result-time" class="text-4xl font-black text-white tracking-tight">0h 00min</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-blue-500/20 text-center">
+                    <div>
+                        <span id="result-energy" class="text-base font-bold text-slate-200">0 kWh</span>
+                        <p class="text-[10px] text-slate-400">Énergie nécessaire</p>
+                    </div>
+                    <div>
+                        <span id="result-cost" class="text-base font-bold text-slate-200">0.00 €</span>
+                        <p class="text-[10px] text-slate-400">Coût estimé</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Sélecteur rapide de favoris -->
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex gap-2">
                 <div class="flex-1">
                     <label class="block text-xs text-slate-400 mb-1">Véhicule favori</label>
-                    <select id="select-saved-car" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+                    <select id="select-saved-car" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
                         <option value="">-- Personnalisé --</option>
                     </select>
                 </div>
                 <div class="flex-1">
                     <label class="block text-xs text-slate-400 mb-1">Borne favorite</label>
-                    <select id="select-saved-charger" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+                    <select id="select-saved-charger" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
                         <option value="">-- Personnalisé --</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Formulaire de calcul -->
+            <!-- Formulaire de calcul de base -->
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-4 shadow-lg">
-                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Paramètres de recharge</h2>
-                
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Capacité de la batterie (kWh)</label>
                     <input type="number" id="battery-capacity" value="60" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-lg font-semibold text-slate-100 focus:outline-none focus:border-blue-500">
@@ -66,32 +84,6 @@
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Puissance de la borne (kW)</label>
                     <input type="number" id="charger-power" value="11" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-lg font-semibold text-slate-100 focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Rendement de charge (%) <span class="text-slate-500">défaut 90%</span></label>
-                    <input type="number" id="efficiency" value="90" min="50" max="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
-                </div>
-            </div>
-
-            <!-- Bloc Résultats -->
-            <div class="bg-gradient-to-br from-blue-900/60 to-slate-800 p-5 rounded-xl border border-blue-500/30 shadow-xl space-y-3">
-                <h2 class="text-xs font-semibold text-blue-300 uppercase tracking-wider">Résultats estimés</h2>
-                
-                <div class="text-center py-2">
-                    <span id="result-time" class="text-3xl font-extrabold text-white">0h 00min</span>
-                    <p class="text-xs text-slate-300 mt-1">Temps de recharge nécessaire</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 pt-3 border-t border-blue-500/20 text-center">
-                    <div>
-                        <span id="result-energy" class="text-lg font-bold text-slate-200">0 kWh</span>
-                        <p class="text-[10px] text-slate-400">Énergie nécessaire</p>
-                    </div>
-                    <div>
-                        <span id="result-cost" class="text-lg font-bold text-slate-200">0.00 €</span>
-                        <p class="text-[10px] text-slate-400">Coût estimé (à 0.20€/kWh)</p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -124,17 +116,40 @@
                 </div>
             </div>
         </section>
+
+        <!-- ONGLET 3 : PARAMÈTRES -->
+        <section id="tab-settings" class="hidden space-y-4">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-4 shadow-lg">
+                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Configuration de calcul</h2>
+                
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Rendement de charge (%)</label>
+                    <input type="number" id="efficiency" value="90" min="50" max="100" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-base font-semibold text-slate-100 focus:outline-none focus:border-blue-500">
+                    <p class="text-[10px] text-slate-500 mt-1">Généralement entre 85% et 92% pour compenser les pertes d'énergie.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Prix du kWh (€ / kWh)</label>
+                    <input type="number" id="kwh-cost" value="0.25" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-base font-semibold text-slate-100 focus:outline-none focus:border-blue-500">
+                    <p class="text-[10px] text-slate-500 mt-1">Permet de calculer le coût estimé de chaque recharge.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Barre de Navigation Mobile en Bas -->
+    <!-- Barre de Navigation Mobile en Bas (3 Onglets) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 flex justify-around p-3 z-20">
         <button onclick="switchTab('calculator')" id="nav-calculator" class="flex flex-col items-center text-blue-400 font-medium text-xs">
             <span class="text-xl">⚡</span>
-            <span>Calculateur</span>
+            <span>Calcul</span>
         </button>
         <button onclick="switchTab('storage')" id="nav-storage" class="flex flex-col items-center text-slate-400 font-medium text-xs">
             <span class="text-xl">🚗</span>
             <span>Favoris</span>
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-slate-400 font-medium text-xs">
+            <span class="text-xl">⚙️</span>
+            <span>Paramètres</span>
         </button>
     </nav>
 
@@ -144,25 +159,56 @@
         function switchTab(tab) {
             const calcSec = document.getElementById('tab-calculator');
             const storSec = document.getElementById('tab-storage');
+            const setSec = document.getElementById('tab-settings');
+
             const navCalc = document.getElementById('nav-calculator');
             const navStor = document.getElementById('nav-storage');
+            const navSet = document.getElementById('nav-settings');
+
+            // Cacher toutes les sections
+            calcSec.classList.add('hidden');
+            storSec.classList.add('hidden');
+            setSec.classList.add('hidden');
+
+            // Réinitialiser la couleur des boutons
+            navCalc.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
+            navStor.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
+            navSet.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
 
             if (tab === 'calculator') {
                 calcSec.classList.remove('hidden');
-                storSec.classList.add('hidden');
                 navCalc.className = "flex flex-col items-center text-blue-400 font-medium text-xs";
-                navStor.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
-            } else {
-                calcSec.classList.add('hidden');
+            } else if (tab === 'storage') {
                 storSec.classList.remove('hidden');
                 navStor.className = "flex flex-col items-center text-blue-400 font-medium text-xs";
-                navCalc.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
                 renderStorageLists();
+            } else if (tab === 'settings') {
+                setSec.classList.remove('hidden');
+                navSet.className = "flex flex-col items-center text-blue-400 font-medium text-xs";
             }
         }
 
+        // Chargement / Sauvegarde des paramètres (Rendement & Tarif)
+        function loadSettings() {
+            const savedEfficiency = localStorage.getItem('electro_efficiency');
+            const savedCost = localStorage.getItem('electro_kwh_cost');
+
+            if (savedEfficiency !== null) document.getElementById('efficiency').value = savedEfficiency;
+            if (savedCost !== null) document.getElementById('kwh-cost').value = savedCost;
+        }
+
+        document.getElementById('efficiency').addEventListener('input', (e) => {
+            localStorage.setItem('electro_efficiency', e.target.value);
+            calculate();
+        });
+
+        document.getElementById('kwh-cost').addEventListener('input', (e) => {
+            localStorage.setItem('electro_kwh_cost', e.target.value);
+            calculate();
+        });
+
         // Calculs dynamiques
-        const inputs = ['battery-capacity', 'current-soc', 'target-soc', 'charger-power', 'efficiency'];
+        const inputs = ['battery-capacity', 'current-soc', 'target-soc', 'charger-power'];
         inputs.forEach(id => {
             document.getElementById(id).addEventListener('input', calculate);
         });
@@ -172,7 +218,9 @@
             const currentSoc = parseFloat(document.getElementById('current-soc').value) || 0;
             const targetSoc = parseFloat(document.getElementById('target-soc').value) || 0;
             const power = parseFloat(document.getElementById('charger-power').value) || 1;
+            
             const efficiency = (parseFloat(document.getElementById('efficiency').value) || 90) / 100;
+            const kwhCost = parseFloat(document.getElementById('kwh-cost').value) || 0;
 
             if (targetSoc <= currentSoc || power <= 0 || capacity <= 0) {
                 document.getElementById('result-time').innerText = "0h 00min";
@@ -192,12 +240,12 @@
             document.getElementById('result-time').innerText = `${hours}h ${minutes < 10 ? '0' : ''}${minutes}min`;
             document.getElementById('result-energy').innerText = `${energyNeeded.toFixed(1)} kWh`;
             
-            // Coût estimé basé sur 0.20€ / kWh
-            const cost = energyNeeded * 0.20;
+            // Coût estimé basé sur le tarif renseigné dans les paramètres
+            const cost = energyNeeded * kwhCost;
             document.getElementById('result-cost').innerText = `${cost.toFixed(2)} €`;
         }
 
-        // Gestion du Stockage Local (LocalStorage)
+        // Gestion des véhicules et bornes
         function getSavedData() {
             const cars = JSON.parse(localStorage.getItem('electro_cars')) || [];
             const chargers = JSON.parse(localStorage.getItem('electro_chargers')) || [];
@@ -217,7 +265,7 @@
             const capacity = parseFloat(document.getElementById('new-car-capacity').value);
             if (!name || isNaN(capacity)) return alert('Veuillez remplir correctement le nom et la capacité.');
 
-            const { cars, chargers } = getSavedData();
+            const { cars } = getSavedData();
             cars.push({ id: Date.now(), name, capacity });
             saveCars(cars);
             document.getElementById('new-car-name').value = '';
@@ -227,7 +275,7 @@
         }
 
         function deleteCar(id) {
-            let { cars, chargers } = getSavedData();
+            let { cars } = getSavedData();
             cars = cars.filter(c => c.id !== id);
             saveCars(cars);
             renderStorageLists();
@@ -239,7 +287,7 @@
             const power = parseFloat(document.getElementById('new-charger-power').value);
             if (!name || isNaN(power)) return alert('Veuillez remplir correctement le nom et la puissance.');
 
-            const { cars, chargers } = getSavedData();
+            const { chargers } = getSavedData();
             chargers.push({ id: Date.now(), name, power });
             saveChargers(chargers);
             document.getElementById('new-charger-name').value = '';
@@ -249,7 +297,7 @@
         }
 
         function deleteCharger(id) {
-            let { cars, chargers } = getSavedData();
+            let { chargers } = getSavedData();
             chargers = chargers.filter(c => c.id !== id);
             saveChargers(chargers);
             renderStorageLists();
@@ -259,7 +307,6 @@
         function renderStorageLists() {
             const { cars, chargers } = getSavedData();
             
-            // Rendu voitures
             const carsContainer = document.getElementById('cars-list');
             carsContainer.innerHTML = cars.length === 0 ? '<p class="text-xs text-slate-500 italic">Aucun véhicule enregistré.</p>' : '';
             cars.forEach(car => {
@@ -271,7 +318,6 @@
                 `;
             });
 
-            // Rendu bornes
             const chargersContainer = document.getElementById('chargers-list');
             chargersContainer.innerHTML = chargers.length === 0 ? '<p class="text-xs text-slate-500 italic">Aucune borne enregistrée.</p>' : '';
             chargers.forEach(chg => {
@@ -300,7 +346,6 @@
             });
         }
 
-        // Écouteurs pour les sélecteurs rapides
         document.getElementById('select-saved-car').addEventListener('change', (e) => {
             if (e.target.value) {
                 document.getElementById('battery-capacity').value = e.target.value;
@@ -316,6 +361,7 @@
         });
 
         // Initialisation au chargement
+        loadSettings();
         updateDropdowns();
         calculate();
     </script>
