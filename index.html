@@ -131,7 +131,7 @@
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Prix du kWh (€ / kWh)</label>
                     <input type="number" id="kwh-cost" value="0.25" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-base font-semibold text-slate-100 focus:outline-none focus:border-blue-500">
-                    <p class="text-[10px] text-slate-500 mt-1">Permet de calculer le coût estimé de chaque recharge.</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Permet de calculer le coût estimé de chaque recharge (sauvegardé automatiquement).</p>
                 </div>
             </div>
         </section>
@@ -165,12 +165,10 @@
             const navStor = document.getElementById('nav-storage');
             const navSet = document.getElementById('nav-settings');
 
-            // Cacher toutes les sections
             calcSec.classList.add('hidden');
             storSec.classList.add('hidden');
             setSec.classList.add('hidden');
 
-            // Réinitialiser la couleur des boutons
             navCalc.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
             navStor.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
             navSet.className = "flex flex-col items-center text-slate-400 font-medium text-xs";
@@ -188,15 +186,30 @@
             }
         }
 
-        // Chargement / Sauvegarde des paramètres (Rendement & Tarif)
-        function loadSettings() {
+        // Chargement initial des valeurs et paramètres stockés
+        function loadSavedState() {
+            // Paramètres
             const savedEfficiency = localStorage.getItem('electro_efficiency');
             const savedCost = localStorage.getItem('electro_kwh_cost');
-
             if (savedEfficiency !== null) document.getElementById('efficiency').value = savedEfficiency;
             if (savedCost !== null) document.getElementById('kwh-cost').value = savedCost;
+
+            // Champs de la page principale
+            const inputsList = ['battery-capacity', 'current-soc', 'target-soc', 'charger-power'];
+            inputsList.forEach(id => {
+                const val = localStorage.getItem('electro_' + id);
+                if (val !== null) document.getElementById(id).value = val;
+            });
+
+            // Sélection des favoris dans les listes déroulantes
+            const savedCarChoice = localStorage.getItem('electro_selected_car');
+            if (savedCarChoice !== null) document.getElementById('select-saved-car').value = savedCarChoice;
+
+            const savedChargerChoice = localStorage.getItem('electro_selected_charger');
+            if (savedChargerChoice !== null) document.getElementById('select-saved-charger').value = savedChargerChoice;
         }
 
+        // Sauvegarde automatique des paramètres
         document.getElementById('efficiency').addEventListener('input', (e) => {
             localStorage.setItem('electro_efficiency', e.target.value);
             calculate();
@@ -207,10 +220,13 @@
             calculate();
         });
 
-        // Calculs dynamiques
-        const inputs = ['battery-capacity', 'current-soc', 'target-soc', 'charger-power'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', calculate);
+        // Sauvegarde automatique des champs de la page principale
+        const mainInputs = ['battery-capacity', 'current-soc', 'target-soc', 'charger-power'];
+        mainInputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                localStorage.setItem('electro_' + id, e.target.value);
+                calculate();
+            });
         });
 
         function calculate() {
@@ -240,7 +256,6 @@
             document.getElementById('result-time').innerText = `${hours}h ${minutes < 10 ? '0' : ''}${minutes}min`;
             document.getElementById('result-energy').innerText = `${energyNeeded.toFixed(1)} kWh`;
             
-            // Coût estimé basé sur le tarif renseigné dans les paramètres
             const cost = energyNeeded * kwhCost;
             document.getElementById('result-cost').innerText = `${cost.toFixed(2)} €`;
         }
@@ -344,25 +359,37 @@
             chargers.forEach(ch => {
                 chargerSelect.innerHTML += `<option value="${ch.power}">${ch.name} (${ch.power} kW)</option>`;
             });
+
+            // Restaurer la sélection mémorisée après mise à jour des listes
+            const savedCarChoice = localStorage.getItem('electro_selected_car');
+            if (savedCarChoice) carSelect.value = savedCarChoice;
+
+            const savedChargerChoice = localStorage.getItem('electro_selected_charger');
+            if (savedChargerChoice) chargerSelect.value = savedChargerChoice;
         }
 
+        // Écouteurs pour les sélecteurs rapides avec mémorisation
         document.getElementById('select-saved-car').addEventListener('change', (e) => {
+            localStorage.setItem('electro_selected_car', e.target.value);
             if (e.target.value) {
                 document.getElementById('battery-capacity').value = e.target.value;
+                localStorage.setItem('electro_battery-capacity', e.target.value);
                 calculate();
             }
         });
 
         document.getElementById('select-saved-charger').addEventListener('change', (e) => {
+            localStorage.setItem('electro_selected_charger', e.target.value);
             if (e.target.value) {
                 document.getElementById('charger-power').value = e.target.value;
+                localStorage.setItem('electro_charger-power', e.target.value);
                 calculate();
             }
         });
 
-        // Initialisation au chargement
-        loadSettings();
+        // Initialisation globale au chargement de l'application
         updateDropdowns();
+        loadSavedState();
         calculate();
     </script>
 </body>
